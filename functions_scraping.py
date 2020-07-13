@@ -79,12 +79,6 @@ def crawl_charts(pages):
         # Parse the content of the request with BeautifulSoup
         soup = BeautifulSoup(response.text, 'html.parser')
 
-        # Scrape start and end date of the week
-        date = soup.find("span", class_='ch-header').text
-        start_date = re.findall(r'(\d+\.\d+\.\d+)', date)[0]
-        end_date = re.findall(r'(\d+\.\d+\.\d+)', date)[1]
-        start_dates.extend(repeat(start_date, 100))
-        end_dates.extend(repeat(end_date, 100))
 
         # Select all the 100 song containers from a single page
         containers = soup.find_all('tr', class_ = 'drill-down-link')
@@ -106,7 +100,15 @@ def crawl_charts(pages):
             # Scrape the chart position
             position = container.find('span', class_ = 'this-week').text
             positions.append(position)
-    
+              
+        # Scrape start and end date of the week
+        date = soup.find("span", class_='ch-header').text
+        start_date = re.findall(r'(\d+\.\d+\.\d+)', date)[0]
+        end_date = re.findall(r'(\d+\.\d+\.\d+)', date)[1]
+        max_pos = int(positions[-1])                      # determining the length of the charts (Top50, Top75, Top100)
+        start_dates.extend(repeat(start_date, max_pos))   # adding date x times to to the list (x=length of topX list)
+        end_dates.extend(repeat(end_date, max_pos))
+            
     # Create pandas dataframe
     charts = pd.DataFrame({'artist': artists,
                        'song': songs,
@@ -120,4 +122,4 @@ def crawl_charts(pages):
 
 
 def create_file(df, filename):
-    df.to_csv(filename + '.csv', index=False)
+    df.to_pickle(filename)
