@@ -1,6 +1,7 @@
 # Standard libraries
 import datetime as dt
 from random import randint
+import os
 import re
 import time
 
@@ -10,12 +11,24 @@ from bs4 import BeautifulSoup
 from itertools import repeat
 import numpy as np
 import pandas as pd
+import pickle
 import requests
 from warnings import warn
 
 
 
 def select_pages(start_date='2019-01-01', end_date='2019-12-31'):
+    '''
+    Selecting the urls of the pages for the period that will be scraped.
+    
+    Parameters:
+        start_date (str): start date of the period
+        end_date (str): end date of the period
+        
+    Output:
+        page: list of urls for the weeks of the period
+    '''
+    
     root_url = 'https://www.offiziellecharts.de/charts/single/for-date-'
     date_1976_12_31 = 220834800000             #page_id of 31/12/1976
     
@@ -39,6 +52,17 @@ def select_pages(start_date='2019-01-01', end_date='2019-12-31'):
 
 
 def crawl_charts(pages):
+    '''
+    Retrieving the charts positions from a list of pages.
+    
+    Parameters:
+        pages: list of urls for each week in a specific period
+        
+    Output:
+        charts: pandas dataframe with information about all charts
+                positions and information from the scraped pages
+    '''
+    
     # Initiate empty lists for items of interest
     artists = []
     end_dates = []
@@ -121,5 +145,6 @@ def crawl_charts(pages):
     return charts
 
 
-def create_file(df, filename):
-    df.to_pickle(filename)
+def create_file(df, file_path):
+    with open(file_path, 'wb') as f:
+        pickle.dump(df, f)
