@@ -17,3 +17,9 @@ Visual analysis of charts for the years 1977 to 2019:
 - Top Artists
 - Top Songs per year
 - Word Cloud
+
+
+**German-Top100-Songs**
+
+Lyrics scraping using the Genius API and lyricsgenius library.
+Still not properly working...
